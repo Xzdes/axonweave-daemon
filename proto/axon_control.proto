@@ -1,0 +1,61 @@
+// proto/axon_control.proto
+syntax = "proto3";
+package axon.control.v1;
+
+// Сервис теперь включает и регистрацию, и проксирование
+service Registry {
+  // Методы регистрации
+  rpc RegisterService(RegistrationRequest) returns (RegistrationResponse);
+  rpc UnregisterService(UnregistrationRequest) returns (UnregistrationResponse);
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+
+  // НОВЫЙ, ПРОСТОЙ МЕТОД ДЛЯ УНАРНОГО ПРОКСИ
+  rpc UnaryProxy(UnaryProxyRequest) returns (UnaryProxyResponse);
+}
+
+// Новый запрос для унарного прокси
+message UnaryProxyRequest {
+  // Полный путь к методу, например, "/echo.v1.EchoService/SayHello"
+  string path = 1;
+  // Тело оригинального запроса, закодированное в байты
+  bytes body = 2;
+}
+
+// Новый ответ для унарного прокси
+message UnaryProxyResponse {
+  // Тело оригинального ответа, закодированное в байты
+  bytes body = 1;
+}
+
+
+// --- Старые сообщения остаются без изменений ---
+message RegistrationRequest {
+  string service_name = 1;
+  string service_address = 2;
+  string security_key = 3;
+}
+message RegistrationResponse {
+  enum Status {
+    UNKNOWN = 0;
+    SUCCESS = 1;
+    INVALID_KEY = 2;
+    NAME_TAKEN = 3;
+  }
+  Status status = 1;
+  string message = 2;
+  uint32 heartbeat_interval_seconds = 3;
+}
+message UnregistrationRequest {
+  string service_name = 1;
+  string security_key = 2;
+}
+message UnregistrationResponse {
+  bool success = 1;
+  string message = 2;
+}
+message HeartbeatRequest {
+  string service_name = 1;
+}
+message HeartbeatResponse {
+  bool acknowledged = 1;
+}

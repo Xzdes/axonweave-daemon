@@ -1,0 +1,22 @@
+// proto/echo.proto
+
+syntax = "proto3";
+
+// Определяем пакет для нашего эхо-сервиса
+package echo.v1;
+
+// Сервис 'Echo'
+service EchoService {
+  // Простой унарный метод: отправил одно сообщение - получил одно в ответ.
+  rpc SayHello (EchoRequest) returns (EchoResponse);
+}
+
+// Сообщение-запрос
+message EchoRequest {
+  string name = 1;
+}
+
+// Сообщение-ответ
+message EchoResponse {
+  string message = 1;
+}
